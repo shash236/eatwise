@@ -1,0 +1,32 @@
+Async Design (via Event Listeners)
+Use @EventListener to decouple and asynchronously handle post-processing logic.
+
+
+Example:
+	@Component
+	public class MealEventListener {
+		@EventListener
+		public void handleMealSaved(MealSavedEvent event) {
+			// Trigger AI review logic
+			// Update calendar streaks
+			// Generate suggestions if needed
+		}
+	}
+
+To run async:
+	@Async
+	@EventListener
+	public void handleAsync(...) { ... }
+
+
+Design Tradeoffs: Sync vs Async
+Sync
+- Simple to implement & debug
+- UI waits for AI computation
+
+
+Async
+	- Non-blocking, scalable
+	- UI needs polling/updates, harder to trace
+
+Chosen: Async for AI-driven tasks like review generation, suggestion updates
