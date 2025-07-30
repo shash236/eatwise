@@ -1,19 +1,19 @@
 package com.eatwise.eatwise_api.meal.service.impl;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.eatwise.eatwise_api.infrastructure.utils.GsonUtils;
 import com.eatwise.eatwise_api.meal.dto.CreateMealCommand;
 import com.eatwise.eatwise_api.meal.dto.CreateMealResult;
 import com.eatwise.eatwise_api.meal.repository.Meal;
 import com.eatwise.eatwise_api.meal.repository.MealRepository;
 import com.eatwise.eatwise_api.meal.service.MealService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.Instant;
-import java.util.UUID;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MealServiceImpl implements MealService {
@@ -32,13 +32,15 @@ public class MealServiceImpl implements MealService {
             .map(a -> new Meal.MealQA(a.getQuestion(), a.getAnswer()))
             .collect(Collectors.toList());
 
+        String mealAnswersJson = GsonUtils.toJson(mealQAList);
+
         Meal meal = new Meal(
             mealId,
             getCurrentUserId(), // TODO : Replace with actual user resolution (e.g., from security context)
             timestamp,
             mealType,
             command.getMealTime(),
-            mealQAList
+            mealAnswersJson
         );
 
         mealRepository.save(meal);
