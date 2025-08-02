@@ -25,8 +25,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(RuntimeException ex) {
         ErrorResponse error = ErrorResponse.builder()
                 .code("INTERNAL_SERVER_ERROR")
                 .message("An unexpected error occurred")
