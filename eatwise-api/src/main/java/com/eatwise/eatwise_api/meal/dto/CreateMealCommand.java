@@ -2,25 +2,22 @@ package com.eatwise.eatwise_api.meal.dto;
 
 
 import java.util.List;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateMealCommand {
-    private String mealTime; // HH:mm format
+    private UUID mealId;
+    private Integer mealHour;
+    private String mealDate; // Format : DD-MM-YYYY
     private String mealType;
-    private List<MealAnswerDTO> mealAnswers;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MealAnswerDTO {
-        private String question;
-        private String answer;
-    }
+    private List<QuestionAnswer> mealAnswers;
 }
 

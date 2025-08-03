@@ -1,21 +1,18 @@
 package com.eatwise.eatwise_api.meal.dto;
 
-
 import java.util.List;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class CreateMealRequest {
-    private UUID mealId; // UUID as String
+@NoArgsConstructor
+public class MealResponse {
+    private String mealId;
     private String mealType;
-    private String mealDate; // Format: YYYY-MM-DD
+    private String mealDate;
     private Integer mealHour;
     private List<QuestionAnswer> answers;
 }
-
