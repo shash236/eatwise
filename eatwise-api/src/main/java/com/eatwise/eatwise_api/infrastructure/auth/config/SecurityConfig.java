@@ -11,8 +11,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.eatwise.eatwise_api.infrastructure.auth.filter.JwtAuthFilter;
 import com.eatwise.eatwise_api.infrastructure.error.config.JwtAuthenticationEntryPoint;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {

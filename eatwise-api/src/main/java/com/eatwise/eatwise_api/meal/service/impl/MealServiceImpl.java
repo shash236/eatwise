@@ -1,64 +1,69 @@
 package com.eatwise.eatwise_api.meal.service.impl;
 
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.eatwise.eatwise_api.infrastructure.auth.service.AuthService;
+import com.eatwise.eatwise_api.infrastructure.utils.DateUtils;
 import com.eatwise.eatwise_api.infrastructure.utils.GsonUtils;
 import com.eatwise.eatwise_api.meal.dto.CreateMealCommand;
 import com.eatwise.eatwise_api.meal.dto.CreateMealResult;
+import com.eatwise.eatwise_api.meal.dto.MealResponse;
+import com.eatwise.eatwise_api.meal.dto.MealType;
+import com.eatwise.eatwise_api.meal.dto.QuestionAnswer;
 import com.eatwise.eatwise_api.meal.repository.Meal;
 import com.eatwise.eatwise_api.meal.repository.MealRepository;
 import com.eatwise.eatwise_api.meal.service.MealService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class MealServiceImpl implements MealService {
 
-    @Autowired
-    private MealRepository mealRepository;
+    private final MealRepository mealRepository;
+    private final AuthService authService;
 
     @Override
+    @Transactional
     public CreateMealResult createMeal(CreateMealCommand command) {
-        UUID mealId = UUID.randomUUID();
-        Instant timestamp = Instant.now();
+        UUID mealId = command.getMealId() == null ? UUID.randomUUID() : command.getMealId();
 
-        Meal.MealType mealType = Meal.MealType.valueOf(command.getMealType().toUpperCase());
+        MealType mealType = MealType.valueOf(command.getMealType().toUpperCase());
 
-        List<Meal.MealQA> mealQAList = command.getMealAnswers().stream()
-            .map(a -> new Meal.MealQA(a.getQuestion(), a.getAnswer()))
-            .collect(Collectors.toList());
+        String mealAnswersJson = GsonUtils.toJson(command.getMealAnswers());
 
-        String mealAnswersJson = GsonUtils.toJson(mealQAList);
+        Meal meal = Meal.builder()
+            .mealId(mealId.toString())
+            .userId(authService.getCurrentUserId())
+            .mealType(mealType)
+            .mealHour(command.getMealHour())
+            .mealDate(DateUtils.parseDate(command.getMealDate()))
+            .mealAnswersJson(mealAnswersJson)
+            .build();
 
-        Meal meal = new Meal(
-            mealId,
-            getCurrentUserId(), // TODO : Replace with actual user resolution (e.g., from security context)
-            timestamp,
-            mealType,
-            command.getMealTime(),
-            mealAnswersJson
-        );
 
         mealRepository.save(meal);
 
-        List<CreateMealCommand.MealAnswerDTO> resultAnswers = command.getMealAnswers();
-
-        return new CreateMealResult(
-            mealId,
-            timestamp,
-            mealType.name(),
-            command.getMealTime(),
-            resultAnswers
-        );
+        return new CreateMealResult(mealId);
     }
 
-    private UUID getCurrentUserId() {
-        // TODO : Replace with real user resolution logic (e.g., from SecurityContext)
-        return UUID.fromString("00000000-0000-0000-0000-000000000001");
+    @Override
+    public List<MealResponse> getMeals(Date date) {
+        List<Meal> meals = mealRepository.findByUserIdAndMealDate(authService.getCurrentUserId(), date);
+        return meals.stream()
+            .map(meal -> new MealResponse(
+                meal.getMealId(),
+                meal.getMealType().name(),
+                DateUtils.formatDate(meal.getMealDate()),
+                meal.getMealHour(),
+                GsonUtils.fromJsonList(meal.getMealAnswersJson(), QuestionAnswer.class)
+            ))
+            .toList();
     }
 }
 

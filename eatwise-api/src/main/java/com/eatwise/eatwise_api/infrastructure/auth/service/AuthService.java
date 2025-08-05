@@ -5,7 +5,9 @@ import java.util.Random;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eatwise.eatwise_api.infrastructure.auth.dto.AuthResponse;
 import com.eatwise.eatwise_api.infrastructure.auth.repository.EmailOtp;
@@ -24,6 +26,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final JavaMailSender mailSender;
 
+    @Transactional
     public void sendOtp(String email) {
         String otp = generateOtp();
         LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
@@ -33,6 +36,7 @@ public class AuthService {
         sendOtpEmail(email, otp);
     }
 
+    @Transactional
     public AuthResponse verifyOtpAndGenerateToken(String email, String otp) {
         EmailOtp record = emailOtpRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("OTP not found"));
@@ -66,6 +70,10 @@ public class AuthService {
         msg.setSubject("Your OTP Code");
         msg.setText("Your OTP is: " + otp);
         mailSender.send(msg);
+    }
+
+    public Long getCurrentUserId() {
+        return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
     }
 }
 

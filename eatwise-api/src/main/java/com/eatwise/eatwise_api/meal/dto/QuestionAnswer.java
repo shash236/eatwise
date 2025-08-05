@@ -1,8 +1,5 @@
 package com.eatwise.eatwise_api.meal.dto;
 
-
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateMealResult {
-    private UUID mealId;
+public class QuestionAnswer {
+    private String question;
+    private String answer;   
 }
-
