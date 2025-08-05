@@ -5,12 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
-import org.apache.commons.lang3.time.DateUtils;
 
 import com.eatwise.eatwise_api.infrastructure.utils.GsonUtils;
-import com.eatwise.eatwise_api.meal.dto.MealResponse;
 import com.eatwise.eatwise_api.meal.dto.MealType;
 import com.eatwise.eatwise_api.meal.dto.QuestionAnswer;
 import com.google.gson.JsonSyntaxException;
