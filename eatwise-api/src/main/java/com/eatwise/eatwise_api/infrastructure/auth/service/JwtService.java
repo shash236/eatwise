@@ -2,6 +2,7 @@ package com.eatwise.eatwise_api.infrastructure.auth.service;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtService {
 
-    private final String SECRET = "replace-with-secure-secret"; //TODO : replace with a secure secret key
+    @Value("${jwt.secret}")
+    private String SECRET;
 
     public String generateToken(User user) {
         return Jwts.builder()
