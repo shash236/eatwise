@@ -19,7 +19,7 @@ export const verifyOtp = async (email: string, otp: string) => {
   }
 
   return res.json(); // contains jwtToken
-};
+}
 
 
 export const getQuestions = async (mealType: string, token: string) => {
